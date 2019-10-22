@@ -20,6 +20,10 @@ namespace WinReg {
     public:
         RegKey(HKEY hKeyParent, const std::wstring &subKey);
         ~RegKey();
+
+        DWORD GetDwordValue(const LPCTSTR valueName);
+        BOOL SetDwordValue(const LPCTSTR valueName, DWORD value);
+
     private:
         HKEY m_hKey{ nullptr };
     };

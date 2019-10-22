@@ -30,3 +30,30 @@ RegKey::RegKey(HKEY hKeyParent, const std::wstring& subKey) {
 RegKey::~RegKey() {
     RegCloseKey(this->m_hKey); //close the key
 }
+
+DWORD RegKey::GetDwordValue(const LPCTSTR valueName) {
+    DWORD dwNumber  = 0;
+    DWORD dwData    = sizeof(DWORD);
+    DWORD retValue;
+
+    retValue =  RegQueryValueExA(this->m_hKey, valueName , 0, 0, (BYTE*)&dwNumber, &dwData);
+
+    if (retValue != ERROR_SUCCESS) {
+//        std::cout << "Cannot get DWORD value: RegGetValue failed." << std::endl;
+        throw WinRegException{ "Cannot get DWORD value: RegGetValue failed.", (LONG) retValue };
+    }
+
+    return dwNumber;
+}
+BOOL RegKey::SetDwordValue(const LPCTSTR valueName, DWORD value) {
+
+    DWORD retCode;
+
+    retCode = RegSetValueEx(this->m_hKey, valueName, 0, REG_DWORD, (BYTE*) & value, sizeof(DWORD));
+    if (retCode != ERROR_SUCCESS) {
+        //std::cout << "Cannot set DWORD value: RegSetValueEx failed." << std::endl;
+        throw WinRegException{"Cannot set DWORD value: RegSetValueEx failed.", (LONG) retCode};
+    }
+
+    return GetDwordValue(valueName) == value;
+}
