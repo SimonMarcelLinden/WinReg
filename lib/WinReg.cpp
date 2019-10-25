@@ -57,3 +57,32 @@ BOOL RegKey::SetDwordValue(const LPCTSTR valueName, DWORD value) {
 
     return GetDwordValue(valueName) == value;
 }
+
+std::string RegKey::GetStringValue(LPCTSTR valueName) const{
+    DWORD dwData       = 256;
+    BYTE cData[256]    = "";
+    DWORD retCode;
+
+    retCode = RegQueryValueEx(this->m_hKey, valueName, 0, 0, cData, &dwData);
+
+    if (retCode != ERROR_SUCCESS) {
+        //std::cout << "Cannot get string value: RegGetValue failed." << std::endl;
+        throw WinRegException{"Cannot get string value: RegGetValue failed.", (LONG) retCode};
+    }
+
+    std::string result((char *)cData);
+    return result;
+}
+
+BOOL RegKey::SetStringValue(char* valueName, char* value){
+
+    DWORD retCode;
+    retCode = RegSetValueEx (this->m_hKey, valueName, 0, REG_SZ, (LPBYTE)value, std::strlen(value)+1);
+
+    if (retCode != ERROR_SUCCESS) {
+        //std::cout << "Cannot set DWORD value: RegSetValueEx failed." << std::endl;
+        throw WinRegException{"Cannot set REGSZ value: RegSetValueEx failed.", (LONG) retCode};
+    }
+
+    return GetStringValue(valueName) == value;
+}

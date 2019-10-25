@@ -24,6 +24,9 @@ namespace WinReg {
         DWORD GetDwordValue(const LPCTSTR valueName);
         BOOL SetDwordValue(const LPCTSTR valueName, DWORD value);
 
+        std::string GetStringValue(LPCTSTR valueName) const;
+        BOOL SetStringValue(char* valueName, char* value);
+
     private:
         HKEY m_hKey{ nullptr };
     };
